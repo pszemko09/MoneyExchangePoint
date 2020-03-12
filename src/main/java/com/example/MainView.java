@@ -2,16 +2,17 @@ package com.example;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 
-import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.data.validator.DoubleRangeValidator;
 import com.vaadin.flow.router.Route;
 
@@ -25,15 +26,20 @@ public class MainView extends VerticalLayout {
 
     private Button convertButton;
     private NumberField sumField;
-    private ComboBox<Currency> currencyFromSelect;
-    private ComboBox<Currency> currencyToSelect;
+    private static ComboBox<Currency> currencyFromSelect;
+    private static ComboBox<Currency> currencyToSelect;
+
+    private HistoricRates historicRates;
+    private Component chartComponent = new Label("If chart is available it will be shown here.");
 
     public MainView(){
         add(
                 new H1("Exchange Office"),
                 buildForm(),
-                convertedSumField
+                convertedSumField,
+                chartComponent
         );
+
         Binder<Money> binder = new Binder<>(Money.class);
         binder.forField(sumField)
                 .asRequired("Sum to exchange is required.")
@@ -55,7 +61,6 @@ public class MainView extends VerticalLayout {
             }
         });
 
-
         convertButton.addClickListener(buttonClickEvent -> {
             Money money = new Money(sumField.getValue(), currencyFromSelect.getValue());
             try {
@@ -64,6 +69,16 @@ public class MainView extends VerticalLayout {
             catch (IOException e) {
                 e.printStackTrace();
             }
+
+            if(currencyFromSelect.getValue() == Currency.EUR && !currencyToSelect.isEmpty()){
+                historicRates = new HistoricRates();
+                Chart newChart = historicRates.createChart();
+                replace(chartComponent, newChart);
+                chartComponent = newChart;
+            }
+            //            else {
+//                replace(chartComponent, new Label("If chart is available it will be shown here."));
+//            }
         });
     }
 
@@ -71,7 +86,7 @@ public class MainView extends VerticalLayout {
         sumField = new NumberField("Sum");
 
         currencyFromSelect = new ComboBox<>("Currency from", Arrays.asList(Currency.values()));
-         currencyToSelect = new ComboBox<>("Currency to", Arrays.asList(Currency.values()));
+        currencyToSelect = new ComboBox<>("Currency to", Arrays.asList(Currency.values()));
 
         convertButton = new Button("Convert");
         convertButton.setEnabled(false);
@@ -82,5 +97,9 @@ public class MainView extends VerticalLayout {
         wrapperLayout.setWidth("100%");
 
         return wrapperLayout;
+    }
+
+    public static Currency getChosenCurrencyTo(){
+        return currencyToSelect.getValue();
     }
 }
