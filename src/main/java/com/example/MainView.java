@@ -22,6 +22,8 @@ import java.util.Arrays;
 
 @Route("")
 public class MainView extends VerticalLayout {
+    private VerticalLayout mainLayout;
+
     private final TextField convertedSumField = new TextField("Sum after exchange");
 
     private Button convertButton;
@@ -34,10 +36,7 @@ public class MainView extends VerticalLayout {
 
     public MainView(){
         add(
-                new H1("Exchange Office"),
-                buildForm(),
-                convertedSumField,
-                chartComponent
+                mainLayout = new VerticalLayout(new H1("Exchange Office"), buildForm(), convertedSumField, chartComponent)
         );
 
         Binder<Money> binder = new Binder<>(Money.class);
@@ -73,12 +72,15 @@ public class MainView extends VerticalLayout {
             if(currencyFromSelect.getValue() == Currency.EUR && !currencyToSelect.isEmpty()){
                 historicRates = new HistoricRates();
                 Chart newChart = historicRates.createChart();
-                replace(chartComponent, newChart);
+                mainLayout.replace(chartComponent, newChart);
                 chartComponent = newChart;
             }
-            //            else {
-//                replace(chartComponent, new Label("If chart is available it will be shown here."));
-//            }
+            if(currencyFromSelect.getValue() != Currency.EUR && !currencyToSelect.isEmpty()){
+                Label infoLabel = new Label("Chart is not available.");
+                mainLayout.replace(chartComponent, infoLabel );
+                chartComponent = infoLabel;
+            }
+
         });
     }
 
