@@ -29,3 +29,5 @@ frontend/
 styles/
 
 node/
+
+.json
