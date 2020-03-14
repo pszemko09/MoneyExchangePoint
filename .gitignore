@@ -24,6 +24,8 @@ webpack.generated.js
 
 *.pem
 
-frontend/*
+frontend/
 
-styles/*
+styles/
+
+node/
