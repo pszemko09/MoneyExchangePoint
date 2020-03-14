@@ -27,5 +27,3 @@ webpack.generated.js
 frontend/*
 
 styles/*
-
-*.json

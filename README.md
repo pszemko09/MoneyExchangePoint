@@ -1,4 +1,4 @@
-# ExchangePointOffice
+# MoneyExchangePoint
 
 Application which allows to exchange money between specified currencies using Vaadin framework.
 
