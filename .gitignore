@@ -22,4 +22,10 @@ error-screenshots/
 
 webpack.generated.js
 
-.pem
+*.pem
+
+frontend/*
+
+styles/*
+
+*.json
